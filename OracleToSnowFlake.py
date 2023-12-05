@@ -15,13 +15,13 @@ ORACLE_PASSWORD = #ORACLE_PASSWORD#
 ORACLE_DSN = #ORACLE_DSN#
  
 # CSV file network path
-CSV_FILE_NETWORK_PATH = r'\\gat-fl-qdb2\dia_import\parts_master_tear.csv'
+CSV_FILE_NETWORK_PATH = #FILE_PATHH#
  
 # Function to get data from Snowflake
 def get_snowflake_data():
     conn = snowflake.connector.connect(
        user=SNOWFLAKE_USER,
-       password=os.getenv('SNOWFLAKE_PYTHON_USER'),  
+       password=#PASSWORD#,  
        account=SNOWFLAKE_ACCOUNT,
        role=SNOWFLAKE_ROLE,
        database=SNOWFLAKE_DATABASE

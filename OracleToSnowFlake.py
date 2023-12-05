@@ -43,7 +43,7 @@ def get_snowflake_data():
 from dw_prod.dw.SNAP_PN_TIER_RECO
 where SNAP_ID = (select max(SNAP_ID) from dw_prod.dw.SNAP_PN_TIER_RECO)
 and CURRENT_TIER::varchar != YEAR_TIER_RECO_OFFSET::varchar
-")  # Replace with your actual query
+")  
         data = cur.fetchall()
         return data
     finally:

@@ -2,30 +2,29 @@ import os
 import csv
 import snowflake.connector
 import cx_Oracle
+import connect
+from email_send_function import *
+import datetime
  
 # Snowflake connection details
-SNOWFLAKE_USER = 'PYTHON_USER'
-SNOWFLAKE_ACCOUNT = 'qr93446.east-us-2.azure'
-SNOWFLAKE_ROLE = 'SYSADMIN'
-SNOWFLAKE_DATABASE = 'DW_PROD'
+SNOWFLAKE_USER = #USER#
+SNOWFLAKE_ACCOUNT = #USER_ACCOUNT#
+SNOWFLAKE_ROLE = #USER_ROLE#
+SNOWFLAKE_DATABASE = #DATABASE#
  
 # Oracle connection details
-ORACLE_USER = 'diatrain'
-ORACLE_PASSWORD = 'quantum'
-ORACLE_DSN = 'GAT-FL-QDB2.gatelesis.com:1521/CCTL'
-
-# Email details
-recipients = 'example@example.com'  
-subject = 'Oracle Procedure Execution Report'
+ORACLE_USER = #ORACLE_USER#
+ORACLE_PASSWORD = #ORACLE_PASSWORD#
+ORACLE_DSN = #ORACLE_DSN#
  
 # CSV file network path
-CSV_FILE_NETWORK_PATH = r'\\gat-fl-qdb2\dia_import\parts_master_tear.csv'
+CSV_FILE_NETWORK_PATH = #FILE_PATHH#
  
 # Function to get data from Snowflake
 def get_snowflake_data():
     conn = snowflake.connector.connect(
        user=SNOWFLAKE_USER,
-       password=os.getenv('SNOWFLAKE_PYTHON_USER'),  
+       password=#PASSWORD#,  
        account=SNOWFLAKE_ACCOUNT,
        role=SNOWFLAKE_ROLE,
        database=SNOWFLAKE_DATABASE
@@ -47,7 +46,7 @@ def get_snowflake_data():
 from dw_prod.dw.SNAP_PN_TIER_RECO
 where SNAP_ID = (select max(SNAP_ID) from dw_prod.dw.SNAP_PN_TIER_RECO)
 and CURRENT_TIER::varchar != YEAR_TIER_RECO_OFFSET::varchar
-")  # Replace with your actual query
+")  
         data = cur.fetchall()
         return data
     finally:
@@ -72,7 +71,7 @@ def run_oracle_procedure():
         cur.close()
         conn.close()
 
-        # Function to send email with attachment
+# Function to send email with attachment
 def send_email_with_attachment(file_path, updated_tier_count):
     current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     if updated_tier_count > 0:
@@ -91,7 +90,7 @@ def send_email_with_attachment(file_path, updated_tier_count):
     except Exception as e:
         print(f'Error! Could not send email: {e}')
  
- 
+
 # Main function
 def main():
     data = get_snowflake_data()

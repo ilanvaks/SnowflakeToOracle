@@ -32,7 +32,7 @@ def get_snowflake_data():
     )
     cur = conn.cursor()
     try:
-        cur.execute("select
+        cur.execute('''select
   PNM_AUTO_KEY
 , PN
 , DESCRIPTION
@@ -47,7 +47,7 @@ def get_snowflake_data():
 from dw_prod.dw.SNAP_PN_TIER_RECO
 where SNAP_ID = (select max(SNAP_ID) from dw_prod.dw.SNAP_PN_TIER_RECO)
 and CURRENT_TIER::varchar != YEAR_TIER_RECO_OFFSET::varchar
-")  
+''')  
         data = cur.fetchall()
         return data
     finally:

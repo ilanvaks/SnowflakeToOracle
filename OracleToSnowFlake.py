@@ -3,6 +3,7 @@ import csv
 import snowflake.connector
 import cx_Oracle
 import connect
+import oracledb
 from email_send_function import *
 import datetime
  
@@ -62,6 +63,7 @@ def write_to_csv(data, file_path):
             writer.writerow(formatted_row)
  
 # Function to run Oracle procedure
+oracledb.init_oracle_client(lib_dir=r"C:\oracle\instantclient_21_12") ## Replace with your actual Oracle client path, need this line to run the script.  Uses Oracle 64bit
 def run_oracle_procedure():
     conn = cx_Oracle.connect(ORACLE_USER, ORACLE_PASSWORD, ORACLE_DSN)
     cur = conn.cursor()

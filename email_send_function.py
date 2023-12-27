@@ -9,10 +9,10 @@ from email import encoders
 from email.mime.base import MIMEBase
 import html
 
-acc = 'no_reply@gatelesis.com'
-password = os.getenv('NO_REPLY_USER')
-server = 'smtp.office365.com'
-port = 587
+acc = ##
+password = ##
+server =##
+port = ###
 
 
 def send_my_email(to, subject, body, attachments = [], body_type = 'html'):

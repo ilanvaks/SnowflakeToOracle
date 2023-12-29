@@ -6,7 +6,9 @@ import connect
 import oracledb
 from email_send_function import *
 import datetime
- 
+
+today = date.today()
+
 # Snowflake connection details
 SNOWFLAKE_USER = #USER#
 SNOWFLAKE_ACCOUNT = #USER_ACCOUNT#
@@ -20,6 +22,7 @@ ORACLE_DSN = #ORACLE_DSN#
  
 # CSV file network path
 CSV_FILE_NETWORK_PATH = #FILE_PATHH#
+CSV_EMAIL_FILE_NETWORK_PATH = 'tier_reco.csv'
  
 # Function to get data from Snowflake
 def get_snowflake_data():
@@ -32,7 +35,7 @@ def get_snowflake_data():
     )
     cur = conn.cursor()
     try:
-        cur.execute('''select
+        cur.execute(f'''select
   PNM_AUTO_KEY
 , PN
 , DESCRIPTION
@@ -41,8 +44,8 @@ def get_snowflake_data():
 , CURRENT_TIER
 , YEAR_TIER_RECO_OFFSET TIER_RECO
 , case when YEAR_TIER_RECO_OFFSET_RULE != 'no offset'
-    then '11/14/2023 Ilan V : tier changed from ' || CURRENT_TIER::varchar || ' to ' || YEAR_TIER_RECO_OFFSET::varchar || ', rule ' || YEAR_TIER_RULE || ' with offset: ' || YEAR_TIER_RECO_OFFSET_RULE
-    else  '11/14/2023 Ilan V : tier changed from ' || CURRENT_TIER::varchar || ' to ' || YEAR_TIER_RECO_OFFSET::varchar || ', rule ' || YEAR_TIER_RULE
+    then '{today} Ilan V : tier changed from ' || CURRENT_TIER::varchar || ' to ' || YEAR_TIER_RECO_OFFSET::varchar || ', rule ' || YEAR_TIER_RULE || ' with offset: ' || YEAR_TIER_RECO_OFFSET_RULE
+    else  '{today} Ilan V : tier changed from ' || CURRENT_TIER::varchar || ' to ' || YEAR_TIER_RECO_OFFSET::varchar || ', rule ' || YEAR_TIER_RULE
   end NOTES
 from dw_prod.dw.SNAP_PN_TIER_RECO
 where SNAP_ID = (select max(SNAP_ID) from dw_prod.dw.SNAP_PN_TIER_RECO)
@@ -96,10 +99,13 @@ def send_email_with_attachment(file_path, updated_tier_count):
 # Main function
 def main():
     data = get_snowflake_data()
-    write_to_csv(data, CSV_FILE_NETWORK_PATH)
+    # save csv file to be read by the Ora proc
+    write_to_csv(data[['PNM_AUTO_KEY','TIER_RECO','NOTES']], CSV_FILE_NETWORK_PATH)
+    # save another file to be added to email as attachment
+    write_to_csv(data[['PN','DESC','CURRENT_TIER','TIER_RECO,']], CSV_EMAIL_FILE_NETWORK_PATH)
     updated_tier_count = len(data)
     run_oracle_procedure()
-    send_email_with_attachment(CSV_FILE_NETWORK_PATH, updated_tier_count)
+    send_email_with_attachment(CSV_EMAIL_FILE_NETWORK_PATH, updated_tier_count)
  
 if __name__ == "__main__":
     main()
